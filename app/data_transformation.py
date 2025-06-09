@@ -1,31 +1,31 @@
 import pandas as pd
 
-def transform(df):
-    expected_columns = ['order_id', 'order_date', 'units_sold', 'unit_price', 'unit_cost', 'country']
-    missing_cols = [col for col in expected_columns if col not in df.columns]
-
-    if missing_cols:
-        raise ValueError(f"Missing required column(s): {', '.join(missing_cols)}")
-        return
-    
+def transform(df: pd.DataFrame) -> pd.DataFrame:
     df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
-    df = df.drop_duplicates(keep="first")
-    df = df.drop_duplicates(subset="order_id")
+    required = ['order_id', 'order_date', 'ship_date', 'units_sold', 'unit_price', 'unit_cost', 'country', 'item_type']
+    missing = [col for col in required if col not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required column(s): {', '.join(missing)}")
+
+    df = df.drop_duplicates()
+    df = df.dropna(subset=required)
 
     df = df[
-        (df['Units Sold'] > 0) &
-        (df['Unit Price'] >= 0) &
-        (df['Unit Cost'] >= 0)
+        (df['units_sold'] > 0) &
+        (df['unit_price'] >= 0) &
+        (df['unit_cost'] >= 0)
     ]
 
-    df['Order Id'] = df['Order Id'].astype(str)
-    df['Order Date'] = pd.to_datetime(df['Order Date'], errors='coerce')
-    df['Ship Date'] = pd.to_datetime(df['Ship Date'], errors='coerce')
-    df['Units Sold'] = df['Units Sold'].astype(int)
-    df['Unit Price'] = df['Unit Price'].astype(float)
-    df['Unit Cost'] = df['Unit Cost'].astype(float)
+    df['order_id'] = df['order_id'].astype(str)
+    df['order_date'] = pd.to_datetime(df['order_date'], errors='coerce')
+    df['ship_date'] = pd.to_datetime(df['ship_date'], errors='coerce')
+    df['units_sold'] = df['units_sold'].astype(int)
+    df['unit_price'] = df['unit_price'].astype(float)
+    df['unit_cost'] = df['unit_cost'].astype(float)
 
+    df['total_revenue'] = df['units_sold'] * df['unit_price']
+    df['total_cost'] = df['units_sold'] * df['unit_cost']
+    df['total_profit'] = df['total_revenue'] - df['total_cost']
 
-
-
+    return df

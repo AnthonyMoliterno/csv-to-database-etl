@@ -1,13 +1,10 @@
 import pandas as pd
 import os
 
-def file_to_df(path):
+def file_to_df(path: str) -> pd.DataFrame:
     _, ext = os.path.splitext(path.lower())
-
     if ext == ".csv":
         return pd.read_csv(path)
-    elif ext == ".xlsx" or ext == ".xls":
+    elif ext in {".xlsx", ".xls"}:
         return pd.read_excel(path)
-    else:
-        raise ValueError("File extension not supported")
-    
+    raise ValueError("File extension not supported")

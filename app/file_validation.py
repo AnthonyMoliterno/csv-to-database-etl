@@ -2,7 +2,7 @@ import os
 
 ALLOWED_EXTENSIONS = {'.xlsx', '.xls', '.csv'}
 
-def check_file(path):
+def check_file(path: str) -> str:
     if not os.path.isfile(path):
         raise FileNotFoundError(f"File not found: {path}")
     
