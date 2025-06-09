@@ -11,5 +11,7 @@ if __name__ == "__main__":
         df = transform(df)
         load_to_sql(df, connection_string, table_name)
         print("ETL successfully completed.")
-    except(FileNotFoundError, ValueError, RuntimeError) as e:
+    except (FileNotFoundError, ValueError, RuntimeError) as e:
         print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
